@@ -1,0 +1,12 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ title }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-warehouse">
+  <div class="page-heading"><div><div class="eyebrow">STAGE 9 · WAREHOUSE</div><h1>{{ title }}</h1><p>{{ help_text|default:'Manage warehouse records securely for internal operations.' }}</p></div><a class="button button-outline" href="{% url 'warehouse-dashboard' %}">Back to warehouses</a></div>
+  <div class="section-card cf-wh-form-wrap"><form method="post" class="cf-wh-form">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="cf-wh-error">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}<div class="cf-wh-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<small class="cf-wh-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+    <button class="button" type="submit">{{ submit }}</button>
+  </form></div>
+</section>
+{% endblock %}

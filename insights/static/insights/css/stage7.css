@@ -1,0 +1,23 @@
+.cf-insights .cf-insights-filter{padding:22px;margin:18px 0 24px}
+.cf-insights h2{font-size:1.2rem;margin:0 0 10px}
+.cf-period-form{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:12px}
+.cf-period-form label{display:grid;gap:6px;font-weight:600;font-size:.88rem}
+.cf-period-form input{padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#111827;min-height:40px}
+.cf-insights-hint,.cf-insights-sub{font-size:.87rem;color:#64748b;line-height:1.55}
+.cf-insights-hint{margin:10px 0 20px}
+.cf-insights-error{color:#9f1239;font-weight:600}
+.cf-insights-actions{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 24px}
+.cf-insights-kpis{margin-top:16px}
+.cf-insights-kpis .stat-value{font-size:clamp(1.25rem,2.6vw,1.8rem);overflow-wrap:anywhere}
+.cf-insights-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0}
+.cf-insights-block{padding:20px;margin:18px 0}
+.cf-insights-columns .cf-insights-block{margin:0}
+.cf-insights-bar-row{margin:14px 0}
+.cf-insights-bar-label{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;margin-bottom:4px}
+.cf-insights-track{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:20px}
+.cf-insights-fill{height:100%;background:#6d4cba;border-radius:99px}
+.cf-insights-trend{display:grid;grid-template-columns:45px minmax(40px,1fr) 25px;gap:8px;align-items:center;margin:9px 0;font-size:.82rem}
+.cf-insights-muted{color:#64748b}
+.cf-insights .table-scroll{overflow-x:auto}
+.cf-insights td a{font-weight:600}
+@media(max-width:800px){.cf-insights-columns{grid-template-columns:1fr}.cf-insights-block{padding:14px}}

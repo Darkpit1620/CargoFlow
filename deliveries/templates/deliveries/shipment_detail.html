@@ -1,0 +1,33 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ shipment.tracking_number }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+  <div class="page-heading"><div><div class="eyebrow">SHIPMENT DETAILS</div><h1>{{ shipment.tracking_number }}</h1><p>Created {{ shipment.created_at|date:'M d, Y · H:i' }} · <span class="status status-{{ shipment.status }}">{{ shipment.get_status_display }}</span></p></div><a class="button button-outline" href="{% url 'shipment-edit' shipment.pk %}">Edit details</a><div class="s3-actions"><a class="button" href="{% url 'shipping-label' shipment.pk %}">Print shipping label</a></div>
+<a class="button button-outline" href="{% url 'support-desk-create' shipment.pk %}">Open support case</a>
+<a class="button button-outline" href="{% url 'billing-create' shipment.pk %}">Create / view invoice</a></div>
+  <div class="detail-grid">
+    <div class="section-card padded-card"><h2>Delivery information</h2><div class="detail-list">
+      <div><span>Sender</span><strong>{{ shipment.sender_name }}</strong></div><div><span>Recipient</span><strong>{{ shipment.recipient_name }}</strong></div><div><span>Recipient phone</span><strong>{{ shipment.recipient_phone }}</strong></div><div><span>Recipient email</span><strong>{{ shipment.recipient_email|default:'—' }}</strong></div>
+      <div><span>Origin</span><strong>{{ shipment.origin }}</strong></div><div><span>Destination</span><strong>{{ shipment.destination }}</strong></div><div><span>Weight</span><strong>{{ shipment.weight_kg }} kg</strong></div><div><span>Delivery fee</span><strong>KES {{ shipment.delivery_fee }}</strong></div>
+      <div><span>Assigned driver</span><strong>{{ shipment.driver.full_name|default:'Unassigned' }}</strong></div><div><span>Expected delivery</span><strong>{{ shipment.expected_delivery|date:'M d, Y'|default:'Not set' }}</strong></div>
+      {% if shipment.notes %}<div class="detail-full"><span>Internal notes</span><strong>{{ shipment.notes|linebreaksbr }}</strong></div>{% endif %}
+    </div><div class="tracking-share">Public tracking link: <a href="{% url 'track-shipment' %}?code={{ shipment.tracking_number|urlencode }}">Open customer tracking →</a></div></div>
+    <div class="side-stack">
+      <div class="section-card padded-card"><h2>Update delivery status</h2><p class="card-description">Each change is added to the tracking timeline.</p><form method="post" action="{% url 'shipment-status' shipment.pk %}">{% csrf_token %}{% for field in status_form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</div>{% endfor %}<button type="submit" class="button button-full">Save status update</button></form></div>
+
+      <div class="section-card padded-card"><h2>Delivery operations</h2><p class="card-description">Record outcomes with internal delivery evidence.</p>
+        {% if proof %}
+          <div class="proof-box"><strong>Delivery confirmed</strong><span>Received by {{ proof.received_by }}</span><span>{{ proof.confirmed_at|date:'M j, Y · H:i' }} · Recorded by {{ proof.confirmed_by.username|default:'Staff' }}</span>{% if proof.note %}<span>Private note: {{ proof.note }}</span>{% endif %}</div>
+        {% else %}
+          {% if shipment.status != 'cancelled' %}<a class="button button-full space-top" href="{% url 'operations-confirm' shipment.pk %}">Confirm delivery</a>{% endif %}
+        {% endif %}
+        {% if shipment.status != 'delivered' and shipment.status != 'cancelled' %}<a class="button button-full button-outline space-top-small" href="{% url 'operations-attempt' shipment.pk %}">Record unsuccessful attempt</a>{% endif %}
+        <a class="subtle-link operations-link" href="{% url 'operations-dispatch' %}">Open dispatch board →</a>
+      </div>
+      <div class="section-card padded-card"><h2>Delivery attempts</h2><div class="timeline">{% for attempt in attempts %}<div class="timeline-item"><div class="timeline-dot"></div><strong>{{ attempt.get_reason_display }}</strong><span>{{ attempt.recorded_at|date:'M j, Y · H:i' }}</span>{% if attempt.location %}<p>{{ attempt.location }}</p>{% endif %}{% if attempt.internal_note %}<p>Internal: {{ attempt.internal_note }}</p>{% endif %}{% if attempt.next_attempt_on %}<p>Try again: {{ attempt.next_attempt_on|date:'M j, Y' }}</p>{% endif %}</div>{% empty %}<p class="card-description">No unsuccessful attempts recorded.</p>{% endfor %}</div></div>
+
+      <div class="section-card padded-card"><h2>Tracking history</h2><div class="timeline">{% for event in events %}<div class="timeline-item"><div class="timeline-dot"></div><strong>{{ event.get_status_display }}</strong><span>{{ event.created_at|date:'M d, Y · H:i' }}</span>{% if event.location %}<p>📍 {{ event.location }}</p>{% endif %}{% if event.note %}<p>{{ event.note }}</p>{% endif %}</div>{% empty %}<p>No events yet.</p>{% endfor %}</div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

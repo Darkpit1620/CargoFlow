@@ -1,0 +1,11 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Create invoice | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-billing">
+  <div class="page-heading"><div><div class="eyebrow">FINANCE</div><h1>Create invoice</h1><p>Shipment {{ shipment.tracking_number }}</p></div><a class="button button-outline" href="{% url 'shipment-detail' shipment.pk %}">Back to shipment</a></div>
+  <div class="section-card padded-card cf-billing-form">
+    <p>Recipient: <strong>{{ shipment.recipient_name }}</strong></p><p>Invoice amount: <strong>KES {{ shipment.delivery_fee }}</strong></p><p>This copies the shipment delivery fee. Issuing an invoice does not charge the customer.</p>
+    <form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<button type="submit" class="button">Create invoice</button></form>
+  </div>
+</section>
+{% endblock %}

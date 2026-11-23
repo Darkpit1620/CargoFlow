@@ -1,0 +1,7 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Record maintenance | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section narrow-page cf-fleet"><div class="page-heading"><div><div class="eyebrow">MAINTENANCE HISTORY</div><h1>Record maintenance</h1><p>For {{ vehicle.registration }} · {{ vehicle.make }} {{ vehicle.model_name }}</p></div><a class="button button-outline" href="{% url 'fleet-detail' vehicle.pk %}">Back to vehicle</a></div>
+  <div class="section-card form-card"><p class="cf-help">Record completed service only. Newer records update the vehicle's last service date, mileage, and next due date.</p><form method="post">{% csrf_token %}{% if form.non_field_errors %}<div role="alert" class="flash error">{{ form.non_field_errors }}</div>{% endif %}<div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'description' %}form-span{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}</div><div class="form-actions"><button type="submit" class="button">Save service record</button><a class="button button-outline" href="{% url 'fleet-detail' vehicle.pk %}">Cancel</a></div></form></div>
+</section>
+{% endblock %}

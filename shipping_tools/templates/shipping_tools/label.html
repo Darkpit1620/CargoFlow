@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shipping label - {{ shipment.tracking_number }} | CargoFlow</title>
+  <link rel="stylesheet" href="{% static 'shipping_tools/css/stage3.css' %}">
+</head>
+<body class="label-background">
+  <div class="label-toolbar no-print">
+    <a href="{% url 'shipment-detail' shipment.pk %}">← Back to shipment</a>
+    <button onclick="window.print()" type="button">Print / Save as PDF</button>
+  </div>
+  <main class="shipping-label">
+    <div class="label-brand"><strong>CargoFlow<span class="label-dot">.</span></strong><span>SHIPMENT LABEL</span></div>
+    <p class="label-number">{{ shipment.tracking_number }}</p>
+    <div class="label-route"><div><small>FROM</small><strong>{{ shipment.origin }}</strong></div><span>→</span><div><small>TO</small><strong>{{ shipment.destination }}</strong></div></div>
+    <div class="label-recipient"><small>DELIVER TO</small><strong>{{ shipment.recipient_name }}</strong><span>{{ shipment.recipient_phone }}</span></div>
+    <div class="label-details"><div><small>SENDER</small><strong>{{ shipment.sender_name }}</strong></div><div><small>WEIGHT</small><strong>{{ shipment.weight_kg }} kg</strong></div></div>
+    <div class="label-bottom"><div class="label-qr"><img src="{% url 'shipping-qr' shipment.pk %}" alt="QR code for shipment tracking" width="150" height="150"><span>Scan to track</span></div><div class="label-details-right"><small>DELIVERY STATUS</small><strong>{{ shipment.get_status_display }}</strong><small>ESTIMATED DELIVERY</small><strong>{{ shipment.expected_delivery|date:'d M Y'|default:'Not scheduled' }}</strong><small>TRACKING LINK</small><span class="long-link">{{ tracking_link }}</span></div></div>
+    <div class="label-foot">Handle with care · cargo tracking powered by CargoFlow</div>
+  </main>
+</body>
+</html>

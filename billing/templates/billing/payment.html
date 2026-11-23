@@ -1,0 +1,11 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Record payment | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-billing">
+  <div class="page-heading"><div><div class="eyebrow">MANUAL PAYMENT RECORD</div><h1>Record payment</h1><p>{{ invoice.invoice_number }} · Outstanding KES {{ invoice.balance }}</p></div><a href="{% url 'billing-detail' invoice.pk %}" class="button button-outline">Back to invoice</a></div>
+  <div class="section-card padded-card cf-billing-form">
+    <p class="cf-billing-warning">Only record funds you have independently confirmed. This form does not initiate an M-Pesa, bank, or card transaction.</p>
+    {% if invoice.balance > 0 %}<form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}</div>{% endfor %}<button type="submit" class="button">Save payment record</button></form>{% else %}<p>This invoice has been fully paid. No additional payments can be recorded.</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

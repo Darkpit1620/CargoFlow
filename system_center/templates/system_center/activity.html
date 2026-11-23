@@ -1,0 +1,10 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Staff activity | CargoFlow{% endblock %}
+{% block content %}
+<section class="container cf-system"><div class="cf-system-header"><div><div class="eyebrow">INTERNAL ADMINISTRATION</div><h1>Staff activity</h1><p class="muted">Successful staff operations recorded without request content or customer details.</p></div><a class="button button-outline" href="{% url 'system-dashboard' %}">Back to System Center</a></div>
+<div class="cf-sys-panel cf-scroll"><table class="cf-table"><thead><tr><th>Time</th><th>Staff</th><th>Method</th><th>Route</th><th>Response</th></tr></thead><tbody>
+{% for event in page_obj %}<tr><td>{{ event.created_at|date:'M d, Y H:i:s' }}</td><td>{{ event.actor.username|default:'Deleted user' }}</td><td>{{ event.http_method }}</td><td>{{ event.view_name }}</td><td>{{ event.response_status }}</td></tr>
+{% empty %}<tr><td colspan="5">No activity recorded.</td></tr>{% endfor %}</tbody></table></div>
+<div class="cf-pagination">{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}</div>
+</section>
+{% endblock %}

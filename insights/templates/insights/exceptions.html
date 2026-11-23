@@ -1,0 +1,28 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Attention board | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-insights">
+  <div class="page-heading"><div><div class="eyebrow">STAGE 7 · DAILY FOLLOW-UP</div><h1>Attention board</h1><p>Open issues that may need follow-up as of {{ today|date:'M j, Y' }}.</p></div><a class="button button-outline" href="{% url 'insights-dashboard' %}">Insights dashboard</a></div>
+  <p class="cf-insights-hint">Only the first 25 records in each category appear below. Use linked modules for full records. A failed shipment may also be overdue.</p>
+  <div class="section-card cf-insights-block"><h2>Overdue shipments ({{ late_count }})</h2><div class="table-scroll"><table><thead><tr><th>Shipment</th><th>Expected</th><th>Status</th><th>Assigned driver</th></tr></thead><tbody>
+    {% for s in late_rows %}<tr><td><a href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.expected_delivery|date:'M j, Y' }}</td><td>{{ s.get_status_display }}</td><td>{{ s.driver.full_name|default:'Unassigned' }}</td></tr>
+    {% empty %}<tr><td colspan="4" class="empty-table">No overdue active shipments.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+  <div class="section-card cf-insights-block"><h2>Failed deliveries ({{ failed_count }})</h2><div class="table-scroll"><table><thead><tr><th>Shipment</th><th>Destination</th><th>Last update</th></tr></thead><tbody>
+    {% for s in failed_rows %}<tr><td><a href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.destination }}</td><td>{{ s.updated_at|date:'M j, Y' }}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty-table">No failed deliveries.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+  <div class="section-card cf-insights-block"><h2>Overdue unpaid invoices ({{ invoice_count }})</h2><div class="table-scroll"><table><thead><tr><th>Invoice</th><th>Due</th><th>Outstanding (KES)</th></tr></thead><tbody>
+    {% for i in invoice_rows %}<tr><td><a href="{% url 'billing-detail' i.pk %}">{{ i.invoice_number }}</a></td><td>{{ i.due_date|date:'M j, Y' }}</td><td>{{ i.balance|floatformat:2 }}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty-table">No unpaid overdue invoices.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+  <div class="section-card cf-insights-block"><h2>High-priority unresolved support cases ({{ case_count }})</h2><div class="table-scroll"><table><thead><tr><th>Case</th><th>Priority</th><th>Due date</th></tr></thead><tbody>
+    {% for c in case_rows %}<tr><td><a href="{% url 'support-desk-detail' c.pk %}">{{ c.subject }}</a></td><td>{{ c.get_priority_display }}</td><td>{{ c.due_date|date:'M j, Y'|default:'Not set' }}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty-table">No high-priority unresolved cases.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+  <div class="section-card cf-insights-block"><h2>Service due within 7 days ({{ maintenance_count }})</h2><div class="table-scroll"><table><thead><tr><th>Vehicle</th><th>Next service</th><th>Driver</th></tr></thead><tbody>
+    {% for v in maintenance_rows %}<tr><td><a href="{% url 'fleet-detail' v.pk %}">{{ v.registration }}</a></td><td>{{ v.next_service_date|date:'M j, Y' }}</td><td>{{ v.assigned_driver.full_name|default:'Unassigned' }}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty-table">No scheduled service due within 7 days.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+</section>
+{% endblock %}

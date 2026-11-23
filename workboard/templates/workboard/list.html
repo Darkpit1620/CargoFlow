@@ -1,0 +1,38 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Team workboard | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-workboard">
+  <div class="page-heading"><div><div class="eyebrow">STAGE 8 · TEAM OPERATIONS</div><h1>Team workboard</h1><p>Assign tasks, manage deadlines and keep internal follow-ups together.</p></div><a class="button" href="{% url 'workboard-create' %}">Create task</a></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Open or in progress</div><div class="stat-value">{{ open_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Assigned to me</div><div class="stat-value">{{ my_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Overdue tasks</div><div class="stat-value">{{ late_count }}</div></div>
+  </div>
+  <div class="section-card space-top">
+    <div class="cf-workboard-pad">
+      <form method="get" class="cf-workboard-filters">
+        <input type="search" name="q" value="{{ query }}" maxlength="100" placeholder="Task title or tracking number" aria-label="Search tasks">
+        <select name="status" aria-label="Task status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        <select name="owner" aria-label="Task ownership"><option value="all" {% if ownership == 'all' %}selected{% endif %}>All staff</option><option value="mine" {% if ownership == 'mine' %}selected{% endif %}>Assigned to me</option></select>
+        <button class="button button-small" type="submit">Filter</button>
+        <a class="subtle-link" href="{% url 'workboard-list' %}">Reset</a>
+        <a class="button button-small button-outline" href="{% url 'workboard-export' %}?q={{ query|urlencode }}&amp;status={{ status|urlencode }}&amp;owner={{ ownership|urlencode }}">Export CSV</a>
+      </form>
+    </div>
+    <div class="table-scroll"><table><thead><tr><th>Task</th><th>Shipment</th><th>Assigned to</th><th>Priority</th><th>Status</th><th>Due</th></tr></thead><tbody>
+      {% for task in page_obj %}<tr>
+        <td><a class="table-link" href="{% url 'workboard-detail' task.pk %}">{{ task.title }}</a></td>
+        <td>{% if task.shipment %}<a href="{% url 'shipment-detail' task.shipment.pk %}">{{ task.shipment.tracking_number }}</a>{% else %}—{% endif %}</td>
+        <td>{{ task.assigned_to.username|default:'Unassigned' }}</td>
+        <td>{{ task.get_priority_display }}</td><td>{{ task.get_status_display }}</td>
+        <td>{% if task.due_date %}{{ task.due_date|date:'M j, Y' }}{% if task.overdue %}<strong class="cf-workboard-overdue"> · Overdue</strong>{% endif %}{% else %}—{% endif %}</td>
+      </tr>{% empty %}<tr><td colspan="6" class="empty-table">No tasks match these filters. Use Create task to add one.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">
+    {% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;status={{ status|urlencode }}&amp;owner={{ ownership|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;status={{ status|urlencode }}&amp;owner={{ ownership|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+  </div>{% endif %}
+</section>
+{% endblock %}

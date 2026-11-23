@@ -1,0 +1,11 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Track a shipment | CargoFlow{% endblock %}
+{% block content %}
+<section class="container tracking-page">
+  <div class="tracking-title"><div class="eyebrow">CUSTOMER TRACKING</div><h1>Where is my package?</h1><p>Enter the tracking number provided with your delivery.</p></div>
+  <form method="get" class="tracking-form"><label for="tracking-code">Tracking number</label><div class="tracking-controls"><input id="tracking-code" name="code" value="{{ code }}" placeholder="CF-20261122-XXXXXXXXXX" required maxlength="60"><button class="button" type="submit">Track shipment →</button></div></form>
+  {% if searched %}{% if shipment %}<div class="tracking-result"><div class="track-top"><div><span class="eyebrow">TRACKING RESULT</span><h2>{{ shipment.tracking_number }}</h2></div><span class="status status-{{ shipment.status }}">{{ shipment.get_status_display }}</span></div><div class="route-card"><div><span>From</span><strong>{{ shipment.origin }}</strong></div><div class="route-arrow">→</div><div><span>To</span><strong>{{ shipment.destination }}</strong></div></div>{% if shipment.expected_delivery %}<p class="muted">Estimated delivery: {{ shipment.expected_delivery|date:'M d, Y' }}</p>{% endif %}
+  <h3>Delivery updates</h3><div class="timeline">{% for event in shipment.events.all %}<div class="timeline-item"><div class="timeline-dot"></div><strong>{{ event.get_status_display }}</strong><span>{{ event.created_at|date:'M d, Y · H:i' }}</span>{% if event.location %}<p>{{ event.location }}</p>{% endif %}</div>{% endfor %}</div></div>{% else %}<div class="not-found"><strong>No shipment found</strong><p>Check the code and try again. Tracking numbers must match exactly.</p></div>{% endif %}{% endif %}
+  <p class="privacy-note">For privacy, public tracking shows delivery status and route details, not recipient contact information.</p>
+</section>
+{% endblock %}

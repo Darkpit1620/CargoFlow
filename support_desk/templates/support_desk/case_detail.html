@@ -1,0 +1,18 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Case {{ case.pk }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section support-desk">
+  <div class="page-heading"><div><div class="eyebrow">INTERNAL SUPPORT CASE #{{ case.pk }}</div><h1>{{ case.subject }}</h1><p>Shipment <a href="{% url 'shipment-detail' case.shipment_id %}">{{ case.shipment.tracking_number }}</a> · {{ case.shipment.recipient_name }}</p></div><a class="button button-outline" href="{% url 'support-desk-list' %}">All cases</a></div>
+  <div class="detail-grid"><div class="section-card padded-card"><h2>Case details</h2><div class="detail-list">
+    <div><span>Category</span><strong>{{ case.get_category_display }}</strong></div><div><span>Priority</span><strong><span class="support-pill p-{{ case.priority }}">{{ case.get_priority_display }}</span></strong></div>
+    <div><span>Status</span><strong>{{ case.get_status_display }}</strong></div><div><span>Due date</span><strong>{{ case.due_date|date:'M j, Y'|default:'Not set' }}</strong></div>
+    <div><span>Opened by</span><strong>{{ case.created_by.username|default:'Staff' }}</strong></div><div><span>Created</span><strong>{{ case.created_at|date:'M j, Y · H:i' }}</strong></div>
+    {% if case.resolved_at %}<div><span>Resolved</span><strong>{{ case.resolved_at|date:'M j, Y · H:i' }}</strong></div>{% endif %}
+    <div class="detail-full"><span>Internal description</span><strong>{{ case.description|linebreaksbr }}</strong></div></div>
+    <p class="card-description support-privacy">This case and its internal notes are only available to staff.</p>
+  </div>
+  <div class="side-stack"><div class="section-card padded-card"><h2>Record a follow-up</h2><p class="card-description">Change the status or write a private note. Your history is retained.</p>
+    <form method="post" action="{% url 'support-desk-update' case.pk %}">{% csrf_token %}{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</div>{% endfor %}<button class="button button-full" type="submit">Save follow-up</button></form></div>
+    <div class="section-card padded-card"><h2>Private case history</h2><div class="timeline">{% for update in updates %}<div class="timeline-item"><div class="timeline-dot"></div><strong>{{ update.get_status_display }}</strong><span>{{ update.created_at|date:'M j, Y · H:i' }} · {{ update.recorded_by.username|default:'Staff' }}</span>{% if update.note %}<p>{{ update.note|linebreaksbr }}</p>{% endif %}</div>{% empty %}<p>No activity yet.</p>{% endfor %}</div></div></div></div>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'deliveries/base.html' %}
+{% load static %}
+{% block title %}Operations insights | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-insights">
+  <div class="page-heading"><div><div class="eyebrow">STAGE 7 · BUSINESS INSIGHTS</div><h1>Operations insights</h1><p>Delivery, billing and workload statistics, in one place.</p></div><a class="button button-outline" href="{% url 'insights-attention' %}">Attention board</a></div>
+  <div class="section-card cf-insights-filter">
+    <h2>Reporting period</h2>
+    <form method="get" class="cf-period-form">
+      <label>From {{ filter_form.start }}</label><label>To {{ filter_form.end }}</label>
+      <button class="button button-small" type="submit">Apply dates</button>
+      <a class="subtle-link" href="{% url 'insights-dashboard' %}">Last 30 days</a>
+    </form>
+    {% if filter_form.errors %}<p class="cf-insights-error" role="alert">Please correct the reporting dates. {{ filter_form.non_field_errors }} {{ filter_form.start.errors }} {{ filter_form.end.errors }}</p>{% endif %}
+    {% if period %}<p class="cf-insights-hint">Showing shipments created from <strong>{{ period.start|date:'M j, Y' }}</strong> to <strong>{{ period.end|date:'M j, Y' }}</strong>. Delivery statuses are current, not historical. Payment totals use their recorded receipt dates.</p>{% endif %}
+  </div>
+  {% if summary %}
+  <div class="stats-grid cf-insights-kpis">
+    <div class="stat-card"><div class="stat-label">Shipments created</div><div class="stat-value">{{ summary.shipment_total }}</div><span>In selected period</span></div>
+    <div class="stat-card"><div class="stat-label">Currently delivered</div><div class="stat-value">{{ summary.delivered }}</div><span>{{ summary.delivery_rate }}% of this period's shipments</span></div>
+    <div class="stat-card"><div class="stat-label">Booked shipment fees</div><div class="stat-value">KES {{ summary.booked_fees|floatformat:2 }}</div><span>Not equivalent to payments</span></div>
+    <div class="stat-card"><div class="stat-label">Invoices issued</div><div class="stat-value">KES {{ summary.issued_invoices|floatformat:2 }}</div><span>Invoice creation date in range</span></div>
+    <div class="stat-card"><div class="stat-label">Payments recorded</div><div class="stat-value">KES {{ summary.recorded_payments|floatformat:2 }}</div><span>Manual ledger records for period</span></div>
+    <div class="stat-card"><div class="stat-label">Outstanding invoices</div><div class="stat-value">KES {{ summary.outstanding_all_time|floatformat:2 }}</div><span>Current balance across all dates</span></div>
+  </div>
+  <div class="cf-insights-actions"><a class="button button-small" href="{% url 'insights-export' %}?start={{ period.start|date:'Y-m-d' }}&amp;end={{ period.end|date:'Y-m-d' }}">Export selected shipments (CSV)</a><a href="{% url 'insights-attention' %}" class="button button-small button-outline">View urgent items</a></div>
+  <div class="cf-insights-columns">
+    <div class="section-card cf-insights-block"><h2>Current shipment statuses</h2><p class="cf-insights-sub">Based on shipments created in the selected period.</p>
+      {% for row in summary.status_rows %}<div class="cf-insights-bar-row"><div class="cf-insights-bar-label"><span>{{ row.name }}</span><strong>{{ row.count }}</strong></div><div class="cf-insights-track"><div style="width:{{ row.percent }}%" class="cf-insights-fill"></div></div></div>
+      {% empty %}<p class="cf-insights-muted">No shipments in this period.</p>{% endfor %}
+    </div>
+    <div class="section-card cf-insights-block"><h2>Shipments created by day</h2><p class="cf-insights-sub">Last 14 days of the selected date range.</p>
+      {% for row in summary.trend %}<div class="cf-insights-trend"><span>{{ row.date|date:'M j' }}</span><div class="cf-insights-track"><div class="cf-insights-fill" style="width:{{ row.width }}%"></div></div><strong>{{ row.count }}</strong></div>{% endfor %}
+    </div>
+  </div>
+  <div class="cf-insights-columns">
+    <div class="section-card cf-insights-block"><h2>Driver performance</h2><p class="cf-insights-sub">Assigned shipments created in the period, current delivery status.</p>
+      <div class="table-scroll"><table><thead><tr><th>Driver</th><th>Shipments</th><th>Delivered</th></tr></thead><tbody>
+      {% for row in summary.driver_rows %}<tr><td>{{ row.driver__full_name }}</td><td>{{ row.total }}</td><td>{{ row.delivered }}</td></tr>
+      {% empty %}<tr><td colspan="3" class="empty-table">No assigned shipments in this period.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </div>
+    <div class="section-card cf-insights-block"><h2>Payment method breakdown</h2><p class="cf-insights-sub">Staff-recorded payments only. This does not verify settlement with a bank or M-Pesa.</p>
+      <div class="table-scroll"><table><thead><tr><th>Method</th><th>Amount (KES)</th></tr></thead><tbody>
+      {% for row in summary.payment_methods %}<tr><td>{{ row.label }}</td><td>{{ row.total|floatformat:2 }}</td></tr>
+      {% empty %}<tr><td colspan="2" class="empty-table">No payments recorded for this period.</td></tr>{% endfor %}
+      </tbody></table></div>
+      <p class="cf-insights-sub"><strong>{{ summary.late_shipments }}</strong> overdue shipments · <strong>{{ summary.unresolved_cases }}</strong> unresolved support cases · <strong>{{ summary.service_due }}</strong> vehicles due service within 7 days (current snapshot).</p>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

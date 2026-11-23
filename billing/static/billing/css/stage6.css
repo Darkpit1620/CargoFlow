@@ -1,0 +1,9 @@
+.cf-billing .cf-billing-form{max-width:720px}
+.cf-billing .cf-billing-pad{padding:20px}
+.cf-billing .cf-billing-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.cf-billing .cf-billing-warning{padding:14px 18px;border-radius:10px;background:#fff8e8;color:#714b04;margin-top:16px;border:1px solid #ebd29b}
+.cf-billing .cf-billing-note{padding:14px 0;border-top:1px solid #eaeaea}
+.cf-billing .form-field{margin:14px 0}
+.cf-billing .form-field label{display:block;font-weight:600;margin-bottom:6px}
+.cf-billing .form-field input,.cf-billing .form-field select,.cf-billing .form-field textarea{width:100%;max-width:100%;padding:10px;border:1px solid #b8beca;border-radius:8px}
+.cf-billing .errorlist{color:#9d2130}

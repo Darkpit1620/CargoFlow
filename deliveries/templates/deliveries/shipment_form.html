@@ -1,0 +1,12 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ title }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section narrow-page">
+  <div class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>{{ title }}</h1><p>Enter the details below, then save your changes.</p></div></div>
+  <div class="section-card form-card"><form method="post" novalidate>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="flash error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'notes' %}form-span{% endif %}">{% if field.field.widget.input_type == 'checkbox' %}<label class="checkbox-label">{{ field }} {{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}</div>
+    <div class="form-actions"><button class="button" type="submit">{{ action }}</button><a class="button button-outline" href="{% if shipment %}{% url 'shipment-detail' shipment.pk %}{% else %}{% url 'dashboard' %}{% endif %}">Cancel</a></div>
+  </form></div>
+</section>
+{% endblock %}

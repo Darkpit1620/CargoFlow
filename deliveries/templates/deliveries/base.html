@@ -1,0 +1,65 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CargoFlow logistics and delivery management platform.">
+  <title>{% block title %}CargoFlow{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'deliveries/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'shipping_tools/css/stage3.css' %}">
+  <link rel="stylesheet" href="{% static 'support_desk/css/stage4.css' %}">
+  <link rel="stylesheet" href="{% static 'fleet/css/stage5.css' %}">
+  <link rel="stylesheet" href="{% static 'billing/css/stage6.css' %}">
+  <link rel="stylesheet" href="{% static 'insights/css/stage7.css' %}">
+  <link rel="stylesheet" href="{% static 'workboard/css/stage8.css' %}">
+  <link rel="stylesheet" href="{% static 'warehouse/css/stage9.css' %}">
+  <link rel="stylesheet" href="{% static 'system_center/css/stage10.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <div class="container bar-inner">
+    <a class="brand" href="{% url 'home' %}"><span class="brand-symbol">↗</span> CargoFlow<span class="brand-dot">.</span></a>
+    <nav class="navlinks" aria-label="Main navigation">
+      <a href="{% url 'track-shipment' %}">Track shipment</a>
+      {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'shipment-list' %}">Shipments</a>
+        <a href="{% url 'driver-list' %}">Drivers</a>
+        <a href="{% url 'operations-dispatch' %}">Dispatch</a>
+        <a href="{% url 'operations-reports' %}">Reports</a>
+        <a href="{% url 'shipping-bulk-import' %}">CSV Import</a>
+        <a href="{% url 'shipping-manifest' %}">Manifests</a>
+        <a href="{% url 'support-desk-list' %}">Support desk</a>
+        <a href="{% url 'fleet-list' %}">Fleet</a>
+        <a href="{% url 'billing-list' %}">Billing</a>
+        <a href="{% url 'insights-dashboard' %}">Insights</a>
+        <a href="{% url 'workboard-list' %}">Workboard</a>
+        <a href="{% url 'warehouse-dashboard' %}">Warehouses</a>
+        <a href="{% url 'system-dashboard' %}">System Center</a>
+        <a href="{% url 'api-health' %}">API</a>
+      {% endif %}
+    </nav>
+    <div class="auth-actions">
+      {% if user.is_authenticated %}
+        <span class="user-chip">{{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" class="inline-form">{% csrf_token %}<button class="text-button" type="submit">Log out</button></form>
+      {% else %}
+        <a class="button button-small button-outline" href="{% url 'login' %}">Staff sign in</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+<main>
+  {% if messages %}
+    <div class="container flash-wrap" aria-live="polite">
+      {% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  <div class="container footer-inner"><span>© {% now "Y" %} CargoFlow</span><span>Deliver smarter. Track clearer.</span><span>Stage 10 · Local development</span></div>
+</footer>
+</body>
+</html>

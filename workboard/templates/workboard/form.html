@@ -1,0 +1,14 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ heading }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-workboard">
+  <div class="page-heading"><div><div class="eyebrow">TEAM OPERATIONS</div><h1>{{ heading }}</h1><p>Only staff members can view this workboard.</p></div></div>
+  <div class="section-card cf-workboard-form">
+    <form method="post">{% csrf_token %}
+      {% if form.non_field_errors %}<div class="cf-workboard-error">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}<div class="cf-workboard-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="cf-workboard-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}
+      <div class="cf-workboard-actions"><button type="submit" class="button">{{ action }}</button><a href="{% url 'workboard-list' %}" class="button button-outline">Cancel</a></div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Vehicle fleet | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-fleet">
+  <div class="page-heading"><div><div class="eyebrow">FLEET OPERATIONS · STAGE 5</div><h1>Vehicle fleet</h1><p>Keep vehicles, driver assignments, and service dates organized.</p></div><div class="cf-fleet-actions"><a class="button button-outline" href="{% url 'fleet-due' %}">Service due</a><a class="button" href="{% url 'fleet-create' %}">+ Add vehicle</a></div></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total vehicles</div><div class="stat-value">{{ total_count }}</div><span>Registered in CargoFlow</span></div>
+    <div class="stat-card"><div class="stat-label">Available / on route</div><div class="stat-value">{{ active_count }}</div><span>Vehicles currently in service</span></div>
+    <div class="stat-card"><div class="stat-label">Under maintenance</div><div class="stat-value">{{ maintenance_count }}</div><span>Unavailable for new journeys</span></div>
+    <div class="stat-card"><div class="stat-label">Service due ≤ 30 days</div><div class="stat-value">{{ service_due_count }}</div><span>Includes overdue service</span></div>
+  </div>
+  <div class="section-card space-top cf-fleet-table">
+    <form method="get" class="filters"><input type="search" name="q" value="{{ query }}" placeholder="Registration, make, driver" aria-label="Search vehicles"><select name="status" aria-label="Vehicle status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button type="submit" class="button button-small">Filter</button><a href="{% url 'fleet-list' %}" class="subtle-link">Reset</a><a class="button button-small button-outline" href="{% url 'fleet-export' %}?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}">Export CSV</a></form>
+    <div class="table-scroll"><table><thead><tr><th>Registration</th><th>Vehicle</th><th>Status</th><th>Driver</th><th>Next service</th><th></th></tr></thead><tbody>
+      {% for vehicle in page_obj %}<tr><td><a class="table-link" href="{% url 'fleet-detail' vehicle.pk %}">{{ vehicle.registration }}</a></td><td>{{ vehicle.make }} {{ vehicle.model_name }} <span class="cf-secondary">({{ vehicle.get_kind_display }})</span></td><td><span class="cf-fleet-pill cf-{{ vehicle.status }}">{{ vehicle.get_status_display }}</span></td><td>{{ vehicle.assigned_driver.full_name|default:'Unassigned' }}</td><td>{% if vehicle.next_service_date %}{{ vehicle.next_service_date|date:'M j, Y' }} {% if vehicle.service_overdue %}<span class="cf-alert">Overdue</span>{% elif vehicle.service_due_soon %}<span class="cf-warning">Due soon</span>{% endif %}{% else %}Not scheduled{% endif %}</td><td><a class="table-link" href="{% url 'fleet-detail' vehicle.pk %}">Details</a></td></tr>
+      {% empty %}<tr><td colspan="6" class="empty-table">No vehicles match these filters. Add your first vehicle to begin.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next →</a>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

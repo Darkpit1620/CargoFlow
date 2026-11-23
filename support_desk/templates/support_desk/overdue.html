@@ -1,0 +1,12 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Overdue deliveries | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section support-desk">
+  <div class="page-heading"><div><div class="eyebrow">DELIVERY EXCEPTIONS · STAGE 4</div><h1>Overdue shipments</h1><p>{{ total }} active shipment{{ total|pluralize }} with a delivery date before {{ today|date:'M j, Y' }}.</p></div><a class="button button-outline" href="{% url 'support-desk-list' %}">Support desk</a></div>
+  <div class="section-card"><div class="table-scroll"><table><thead><tr><th>Shipment</th><th>Recipient</th><th>Expected</th><th>Driver</th><th>Status</th><th>Action</th></tr></thead><tbody>
+  {% for s in page_obj %}<tr><td><a class="table-link" href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.recipient_name }}</td><td>{{ s.expected_delivery|date:'M j, Y' }}</td><td>{{ s.driver.full_name|default:'Unassigned' }}</td><td>{{ s.get_status_display }}</td><td><a href="{% url 'support-desk-create' s.pk %}">Open case</a></td></tr>
+  {% empty %}<tr><td colspan="6" class="empty-table">No overdue shipments. Great work!</td></tr>{% endfor %}
+  </tbody></table></div></div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next →</a>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Dashboard | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+  <div class="page-heading"><div><div class="eyebrow">OPERATIONS OVERVIEW</div><h1>Dashboard</h1><p>Everything happening across your shipments at a glance.</p></div><a class="button" href="{% url 'shipment-create' %}">+ New shipment</a></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total shipments</div><div class="stat-value">{{ total_shipments }}</div><span>All time</span></div>
+    <div class="stat-card"><div class="stat-label">Active deliveries</div><div class="stat-value">{{ active_shipments }}</div><span>Moving through the network</span></div>
+    <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-value">{{ delivered_shipments }}</div><span>Completed shipments</span></div>
+    <div class="stat-card"><div class="stat-label">Available drivers</div><div class="stat-value">{{ active_drivers }}</div><span>Marked active</span></div>
+  </div>
+  <div class="summary-strip"><span><strong>{{ pending_shipments }}</strong> shipments waiting for pickup</span><span><strong>KES {{ booked_fees|floatformat:2 }}</strong> total booked delivery fees (not payments received)</span></div>
+  <div class="section-card">
+    <div class="card-header"><div><h2>Recent shipments</h2><p>Latest activity across your operation</p></div><a class="subtle-link" href="{% url 'shipment-list' %}">View all →</a></div>
+    <div class="table-scroll"><table><thead><tr><th>Tracking code</th><th>Recipient</th><th>Route</th><th>Status</th><th>Date</th></tr></thead><tbody>
+    {% for s in recent_shipments %}<tr><td><a class="table-link" href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.recipient_name }}</td><td>{{ s.origin }} → {{ s.destination }}</td><td><span class="status status-{{ s.status }}">{{ s.get_status_display }}</span></td><td>{{ s.created_at|date:'M d, Y' }}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty-table">No shipments yet. <a href="{% url 'shipment-create' %}">Create your first shipment</a>.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+</section>
+{% endblock %}

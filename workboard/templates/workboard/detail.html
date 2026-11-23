@@ -1,0 +1,35 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ task.title }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-workboard">
+  <div class="page-heading"><div><div class="eyebrow">TEAM TASK #{{ task.pk }}</div><h1>{{ task.title }}</h1><p>Created by {{ task.created_by.username|default:'Former staff member' }} on {{ task.created_at|date:'M j, Y' }}</p></div><div class="cf-workboard-actions"><a class="button button-outline" href="{% url 'workboard-list' %}">All tasks</a><a class="button" href="{% url 'workboard-edit' task.pk %}">Edit task</a></div></div>
+  <div class="cf-workboard-columns">
+    <div class="section-card cf-workboard-panel">
+      <h2>Task information</h2>
+      <dl class="cf-workboard-details">
+        <dt>Status</dt><dd><strong>{{ task.get_status_display }}</strong></dd>
+        <dt>Priority</dt><dd>{{ task.get_priority_display }}</dd>
+        <dt>Assigned staff</dt><dd>{{ task.assigned_to.username|default:'Unassigned' }}</dd>
+        <dt>Due date</dt><dd>{{ task.due_date|date:'M j, Y'|default:'Not set' }}{% if task.overdue %} <strong class="cf-workboard-overdue">Overdue</strong>{% endif %}</dd>
+        <dt>Shipment</dt><dd>{% if task.shipment %}<a href="{% url 'shipment-detail' task.shipment.pk %}">{{ task.shipment.tracking_number }}</a>{% else %}No shipment linked{% endif %}</dd>
+        <dt>Completed</dt><dd>{{ task.completed_at|date:'M j, Y H:i'|default:'Not completed' }}</dd>
+      </dl>
+      <h3>Description</h3><p class="cf-workboard-description">{{ task.description|default:'No description provided.'|linebreaksbr }}</p>
+      <h3>Change status</h3>
+      <form method="post" action="{% url 'workboard-status' task.pk %}" class="cf-workboard-status">{% csrf_token %}
+        <label for="workboard-status-field">New status</label><select id="workboard-status-field" name="status" required>{% for value,label in statuses %}<option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        <button class="button button-small" type="submit">Update status</button>
+      </form>
+    </div>
+    <div class="section-card cf-workboard-panel">
+      <h2>Private task updates</h2><p>Staff-only notes and action history. No email or SMS is sent.</p>
+      <form method="post" action="{% url 'workboard-note' task.pk %}" class="cf-workboard-note">{% csrf_token %}
+        <label for="{{ note_form.note.id_for_label }}">Add a private note</label>{{ note_form.note }}
+        <button class="button button-small" type="submit">Save note</button>
+      </form>
+      <h3>Activity history</h3>
+      <div class="cf-workboard-events">{% for event in events %}<div class="cf-workboard-event"><strong>{{ event.action|capfirst }}</strong><small>{{ event.created_at|date:'M j, Y H:i' }} · {{ event.actor.username|default:'Former staff member' }}</small><p>{{ event.note|linebreaksbr }}</p></div>{% empty %}<p>No updates yet.</p>{% endfor %}</div>
+    </div>
+  </div>
+</section>
+{% endblock %}

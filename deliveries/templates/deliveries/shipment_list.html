@@ -1,0 +1,15 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Shipments | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+  <div class="page-heading"><div><div class="eyebrow">DELIVERY RECORDS</div><h1>Shipments</h1><p>Search and manage every delivery in your system.</p></div><a class="button" href="{% url 'shipment-create' %}">+ New shipment</a><span class="s3-actions"><a class="button button-outline" href="{% url 'shipping-bulk-import' %}">Import CSV</a></span></div>
+  <div class="section-card">
+    <form class="filters" method="get"><input type="search" name="q" value="{{ query }}" placeholder="Search code, recipient, or city" aria-label="Search shipments"><select name="status" aria-label="Filter status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="button button-small" type="submit">Filter</button><a class="subtle-link" href="{% url 'shipment-list' %}">Reset</a></form>
+    <div class="table-scroll"><table><thead><tr><th>Tracking code</th><th>Recipient</th><th>Route</th><th>Driver</th><th>Status</th><th>Created</th></tr></thead><tbody>
+      {% for s in page_obj %}<tr><td><a class="table-link" href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.recipient_name }}</td><td>{{ s.origin }} → {{ s.destination }}</td><td>{{ s.driver.full_name|default:'Unassigned' }}</td><td><span class="status status-{{ s.status }}">{{ s.get_status_display }}</span></td><td>{{ s.created_at|date:'M d, Y' }}</td></tr>
+      {% empty %}<tr><td colspan="6" class="empty-table">No matching shipments found.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&status={{ status|urlencode }}&page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&status={{ status|urlencode }}&page={{ page_obj.next_page_number }}">Next →</a>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

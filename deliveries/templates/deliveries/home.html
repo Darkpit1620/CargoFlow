@@ -1,0 +1,33 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}CargoFlow | Logistics made clearer{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow">LOGISTICS OPERATIONS PLATFORM</div>
+      <h1>Every shipment.<br><span>One clear view.</span></h1>
+      <p>Manage deliveries, assign drivers, update shipment status, and give customers a simple way to track their packages.</p>
+      <div class="hero-buttons">
+        <a class="button" href="{% url 'track-shipment' %}">Track a delivery <span aria-hidden="true">→</span></a>
+        {% if user.is_authenticated and user.is_staff %}<a class="button button-outline" href="{% url 'dashboard' %}">Open dashboard</a>{% else %}<a class="button button-outline" href="{% url 'login' %}">Staff dashboard</a>{% endif %}
+      </div>
+      <div class="mini-proof"><span class="dot-ok"></span> Local development environment ready</div>
+    </div>
+    <div class="hero-panel">
+      <div class="window-top"><div><i></i><i></i><i></i></div><span>Shipment journey</span><span class="live-mark">● LIVE WORKFLOW</span></div>
+      <div class="parcel-mark">▣</div>
+      <div class="window-title">A better way to move things.</div>
+      <div class="journey-line"><div class="journey-step"><span>01</span><strong>Shipment created</strong><small>Register and assign</small></div><div class="journey-step"><span>02</span><strong>On the road</strong><small>Track each milestone</small></div><div class="journey-step"><span>03</span><strong>Delivered</strong><small>Close with confidence</small></div></div>
+      <div class="panel-footer">One system · Consistent updates · Clear visibility</div>
+    </div>
+  </div>
+</section>
+<section class="container feature-section">
+  <div class="section-intro"><div class="eyebrow">BUILT FOR THE EVERYDAY WORKFLOW</div><h2>Simple tools for moving forward.</h2></div>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-icon">▤</div><h3>Shipment management</h3><p>Register parcels, see their details, and keep delivery records in one place.</p></div>
+    <div class="feature-card"><div class="feature-icon">♙</div><h3>Driver assignments</h3><p>Manage available drivers and assign them to shipments as work comes in.</p></div>
+    <div class="feature-card"><div class="feature-icon">◎</div><h3>Tracking updates</h3><p>Record delivery milestones and give customers a tracking code to follow.</p></div>
+  </div>
+</section>
+{% endblock %}

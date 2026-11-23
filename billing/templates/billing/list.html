@@ -1,0 +1,21 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Invoices | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-billing">
+  <div class="page-heading"><div><div class="eyebrow">FINANCE · STAGE 6</div><h1>Shipment invoices</h1><p>Track invoices and staff-recorded payments in Kenyan shillings.</p></div></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Invoices</div><div class="stat-value">{{ invoice_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total invoiced</div><div class="stat-value">KES {{ issued|floatformat:2 }}</div></div>
+    <div class="stat-card"><div class="stat-label">Payments recorded</div><div class="stat-value">KES {{ collected|floatformat:2 }}</div></div>
+    <div class="stat-card"><div class="stat-label">Outstanding</div><div class="stat-value">KES {{ outstanding|floatformat:2 }}</div></div>
+  </div>
+  <div class="section-card space-top cf-billing-card">
+    <div class="cf-billing-pad"><form method="get" class="filters"><input type="search" name="q" value="{{ query }}" placeholder="Invoice, tracking number, recipient" aria-label="Search invoices"><button type="submit" class="button button-small">Search</button><a href="{% url 'billing-list' %}" class="subtle-link">Reset</a><a href="{% url 'billing-export' %}?q={{ query|urlencode }}" class="button button-small button-outline">Export CSV</a></form></div>
+    <div class="table-scroll"><table><thead><tr><th>Invoice</th><th>Tracking</th><th>Recipient</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>
+    {% for invoice in page_obj %}<tr><td><a class="table-link" href="{% url 'billing-detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td><td>{{ invoice.shipment.tracking_number }}</td><td>{{ invoice.shipment.recipient_name }}</td><td>KES {{ invoice.amount }}</td><td>KES {{ invoice.total_paid }}</td><td>KES {{ invoice.balance }}</td><td>{{ invoice.payment_status }}{% if invoice.overdue %} · <strong>Overdue</strong>{% endif %}</td></tr>
+    {% empty %}<tr><td class="empty-table" colspan="7">No invoices found. Open a shipment and choose Create invoice.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?q={{ query|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a>{% endif %}</div>{% endif %}
+</section>
+{% endblock %}

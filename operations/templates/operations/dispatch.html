@@ -1,0 +1,19 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Dispatch board | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+  <div class="page-heading"><div><div class="eyebrow">OPERATIONS · STAGE 2</div><h1>Dispatch board</h1><p>Assign active drivers to open shipments. Completed shipments are not shown.</p></div><a class="button button-outline" href="{% url 'shipment-create' %}">+ New shipment</a><span class="s3-actions"><a class="button button-outline" href="{% url 'shipping-manifest' %}">Driver manifests</a></span></div>
+  <div class="stats-grid stats-grid-two">
+    <div class="stat-card"><div class="stat-label">Waiting for a driver</div><div class="stat-value">{{ unassigned_count }}</div><span>Open shipments without a driver</span></div>
+    <div class="stat-card"><div class="stat-label">Assigned shipments</div><div class="stat-value">{{ assigned_count }}</div><span>Open shipments with a driver</span></div>
+  </div>
+  <div class="section-card space-top">
+    <form method="get" class="filters"><label for="driver-filter" class="filter-label">Show</label><select id="driver-filter" name="driver"><option value="">All open shipments</option><option value="unassigned" {% if driver_filter == 'unassigned' %}selected{% endif %}>Unassigned only</option>{% for d in drivers_for_filter %}<option value="{{ d.pk }}" {% if driver_filter == d.pk|stringformat:'s' %}selected{% endif %}>{{ d.full_name }}</option>{% endfor %}</select><button class="button button-small" type="submit">Apply</button><a href="{% url 'operations-dispatch' %}" class="subtle-link">Reset</a></form>
+    <div class="table-scroll"><table><thead><tr><th>Shipment</th><th>Destination</th><th>Delivery date</th><th>Status</th><th>Assign driver</th></tr></thead><tbody>
+      {% for s in shipments %}<tr><td><a class="table-link" href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a><div class="table-sub">{{ s.recipient_name }}</div></td><td>{{ s.destination }}</td><td>{% if s.expected_delivery %}<span {% if s.expected_delivery < today %}class="overdue-label"{% endif %}>{{ s.expected_delivery|date:'M j, Y' }}</span>{% else %}Not set{% endif %}</td><td><span class="status status-{{ s.status }}">{{ s.get_status_display }}</span></td><td><form method="post" action="{% url 'operations-assign' s.pk %}" class="assignment-form">{% csrf_token %}<select name="driver" aria-label="Driver for {{ s.tracking_number }}"><option value="">Unassigned</option>{% for d in active_drivers %}<option value="{{ d.pk }}" {% if s.driver_id == d.pk %}selected{% endif %}>{{ d.full_name }}</option>{% endfor %}{% if s.driver and not s.driver.is_active %}<option value="" selected>Inactive: {{ s.driver.full_name }} (remove)</option>{% endif %}</select><button type="submit" class="button button-small">Save</button></form></td></tr>
+      {% empty %}<tr><td colspan="5" class="empty-table">No open shipments match this view.</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% if shipments|length >= 100 %}<div class="table-notice">Showing the first 100 open shipments. Filter by driver to narrow the list.</div>{% endif %}
+  </div>
+</section>
+{% endblock %}

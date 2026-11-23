@@ -1,0 +1,8 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Confirm delivery | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section narrow-page">
+  <div class="page-heading"><div><div class="eyebrow">DELIVERY RECORD</div><h1>Confirm delivery</h1><p>{{ shipment.tracking_number }} · {{ shipment.origin }} → {{ shipment.destination }}</p></div><a class="button button-outline" href="{% url 'shipment-detail' shipment.pk %}">Cancel</a></div>
+  <div class="section-card form-card"><p class="card-description">Record who received the shipment. The recipient name and private note will only be visible to staff.</p><form method="post">{% csrf_token %}<div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'note' %}form-span{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>{% endfor %}</div><div class="form-actions"><button class="button" type="submit">Confirm delivered</button><a class="button button-outline" href="{% url 'shipment-detail' shipment.pk %}">Back</a></div></form></div>
+</section>
+{% endblock %}

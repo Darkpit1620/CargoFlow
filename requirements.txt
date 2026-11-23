@@ -1,0 +1,6 @@
+# Compatible with the Django 5.2 / DRF versions already installed in CargoFlow.
+Django>=5.2,<5.3
+djangorestframework>=3.16,<4
+# To use PostgreSQL instead of the default local SQLite database, install:
+# pip install "psycopg[binary]>=3.2,<4"
+qrcode>=8,<9

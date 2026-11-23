@@ -1,0 +1,12 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ heading }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section narrow-page cf-fleet">
+  <div class="page-heading"><div><div class="eyebrow">FLEET OPERATIONS</div><h1>{{ heading }}</h1><p>Vehicle details and internal assignment records.</p></div><a class="button button-outline" href="{% if vehicle %}{% url 'fleet-detail' vehicle.pk %}{% else %}{% url 'fleet-list' %}{% endif %}">Back</a></div>
+  <div class="section-card form-card"><form method="post">{% csrf_token %}{% if form.non_field_errors %}<div role="alert" class="flash error">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">{% for field in form %}<div class="form-field {% if field.name == 'notes' %}form-span{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}</div>
+    <p class="cf-help">Assigning a vehicle here does not change dispatch assignments or current shipments.</p>
+    <div class="form-actions"><button type="submit" class="button">{{ action }}</button><a class="button button-outline" href="{% url 'fleet-list' %}">Cancel</a></div>
+  </form></div>
+</section>
+{% endblock %}

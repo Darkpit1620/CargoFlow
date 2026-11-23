@@ -1,0 +1,11 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Driver manifest | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+ <div class="page-heading"><div><div class="eyebrow">SHIPPING TOOLS · STAGE 3</div><h1>Driver manifest</h1><p>See all open deliveries assigned to one driver and export their route list.</p></div><a class="button button-outline" href="{% url 'operations-dispatch' %}">Open dispatch board</a></div>
+ <div class="section-card padded-card"><form method="get" class="s3-manifest-form"><label for="driver-select">Choose driver</label><select class="form-control" name="driver" id="driver-select" required><option value="">Select a driver</option>{% for driver in drivers %}<option value="{{ driver.pk }}" {% if selected_driver.pk == driver.pk %}selected{% endif %}>{{ driver.full_name }}{% if not driver.is_active %} (inactive){% endif %}</option>{% endfor %}</select><button class="button" type="submit">Show deliveries</button></form>
+ {% if error %}<p role="alert" class="s3-error-message">{{ error }}</p>{% endif %}
+ {% if selected_driver %}<div class="s3-manifest-heading"><div><h2>{{ selected_driver.full_name }}</h2><p>{{ shipments|length }} open shipments displayed (maximum 500)</p></div><a class="button button-outline" href="{% url 'shipping-manifest-export' %}?driver={{ selected_driver.pk }}">Download full CSV manifest</a></div><div class="table-scroll"><table><thead><tr><th>Shipment</th><th>Recipient</th><th>Phone</th><th>Destination</th><th>Status</th><th>Expected delivery</th></tr></thead><tbody>{% for s in shipments %}<tr><td><a class="table-link" href="{% url 'shipment-detail' s.pk %}">{{ s.tracking_number }}</a></td><td>{{ s.recipient_name }}</td><td>{{ s.recipient_phone }}</td><td>{{ s.destination }}</td><td>{{ s.get_status_display }}</td><td>{{ s.expected_delivery|date:'d M Y'|default:'—' }}</td></tr>{% empty %}<tr><td colspan="6">No open deliveries are assigned to this driver.</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+ </div>
+</section>
+{% endblock %}

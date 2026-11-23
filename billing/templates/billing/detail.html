@@ -1,0 +1,23 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}{{ invoice.invoice_number }} | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section cf-billing">
+  <div class="page-heading"><div><div class="eyebrow">INVOICE DETAILS</div><h1>{{ invoice.invoice_number }}</h1><p>{{ invoice.payment_status }}{% if invoice.overdue %} · Overdue{% endif %}</p></div><div class="cf-billing-buttons"><a href="{% url 'billing-list' %}" class="button button-outline">All invoices</a>{% if invoice.balance > 0 %}<a class="button" href="{% url 'billing-payment-create' invoice.pk %}">Record payment</a>{% endif %}</div></div>
+  <div class="section-card padded-card cf-billing-card">
+    <div class="detail-list">
+      <div><span>Shipment</span><strong><a href="{% url 'shipment-detail' invoice.shipment.pk %}">{{ invoice.shipment.tracking_number }}</a></strong></div>
+      <div><span>Recipient</span><strong>{{ invoice.shipment.recipient_name }}</strong></div>
+      <div><span>Amount</span><strong>KES {{ invoice.amount }}</strong></div>
+      <div><span>Paid</span><strong>KES {{ invoice.total_paid }}</strong></div>
+      <div><span>Balance</span><strong>KES {{ invoice.balance }}</strong></div>
+      <div><span>Due</span><strong>{{ invoice.due_date|date:'M j, Y' }}</strong></div>
+    </div>
+    {% if invoice.notes %}<p class="cf-billing-note">{{ invoice.notes|linebreaksbr }}</p>{% endif %}
+    <p class="cf-billing-warning">Internal manual ledger. Payment records are entered by staff after confirming receipt. CargoFlow does not collect or verify payments automatically.</p>
+  </div>
+  <div class="section-card space-top"><div class="cf-billing-pad"><h2>Payment history</h2></div><div class="table-scroll"><table><thead><tr><th>Received</th><th>Method</th><th>Reference</th><th>Amount</th><th>Recorded by</th></tr></thead><tbody>
+    {% for payment in payments %}<tr><td>{{ payment.received_on|date:'M j, Y' }}</td><td>{{ payment.get_method_display }}</td><td>{{ payment.reference|default:'—' }}</td><td>KES {{ payment.amount }}</td><td>{{ payment.recorded_by.username|default:'—' }}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty-table">No payments have been recorded.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+</section>
+{% endblock %}

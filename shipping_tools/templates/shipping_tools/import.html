@@ -1,0 +1,9 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Bulk import | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+ <div class="page-heading"><div><div class="eyebrow">SHIPPING TOOLS · STAGE 3</div><h1>Import shipments from CSV</h1><p>Add up to {{ max_shipments }} shipments at once. Any invalid row prevents the entire import.</p></div><a class="button button-outline" href="{% url 'shipping-import-template' %}">Download CSV template</a></div>
+ {% if errors %}<div class="section-card padded-card s3-errors" role="alert"><h2>Nothing was imported</h2><p>Fix these errors and upload the file again.</p><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+ <div class="section-card padded-card s3-import-card"><h2>Upload shipment spreadsheet</h2><p class="card-description">Use the template above and save your spreadsheet as UTF-8 CSV. Do not enter tracking numbers; CargoFlow creates them.</p><form method="post" enctype="multipart/form-data">{% csrf_token %}<label for="s3-file">CSV file (maximum 1 MB)</label><input id="s3-file" class="form-control" type="file" name="file" accept=".csv,text/csv" required><div class="s3-form-actions"><button class="button" type="submit">Validate and import</button><a href="{% url 'shipment-list' %}" class="subtle-link">Back to shipments</a></div></form><p class="s3-tip">Required columns: sender_name, recipient_name, recipient_phone, origin, destination, weight_kg. Optional columns: recipient_email, delivery_fee, expected_delivery, notes.</p></div>
+</section>
+{% endblock %}

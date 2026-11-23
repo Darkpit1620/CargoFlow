@@ -1,0 +1,10 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}New support case | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section support-desk">
+  <div class="page-heading"><div><div class="eyebrow">NEW DELIVERY ISSUE</div><h1>Create support case</h1><p>For shipment <a href="{% url 'shipment-detail' shipment.pk %}">{{ shipment.tracking_number }}</a> · {{ shipment.recipient_name }}</p></div><a href="{% url 'support-desk-list' %}" class="button button-outline">Back to support desk</a></div>
+  <div class="section-card padded-card support-form"><form method="post">{% csrf_token %}{% if form.non_field_errors %}<div class="report-error">{{ form.non_field_errors }}</div>{% endif %}
+  {% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% for error in field.errors %}<div class="support-error">{{ error }}</div>{% endfor %}</div>{% endfor %}
+  <button type="submit" class="button">Create support case</button></form></div>
+</section>
+{% endblock %}

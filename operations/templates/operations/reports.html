@@ -1,0 +1,16 @@
+{% extends 'deliveries/base.html' %}
+{% block title %}Operations reports | CargoFlow{% endblock %}
+{% block content %}
+<section class="container page-section">
+  <div class="page-heading"><div><div class="eyebrow">OPERATIONS · STAGE 2</div><h1>Delivery reports</h1><p>Review booked fees, shipment outcomes, and overdue deliveries.</p></div><a class="button" href="{% url 'operations-export' %}?from={{ from_date|urlencode }}&amp;to={{ to_date|urlencode }}">Download CSV</a></div>
+  <div class="section-card"><form method="get" class="filters"><div class="form-field"><label for="from_date">From</label><input class="form-control" type="date" id="from_date" name="from" value="{{ from_date }}"></div><div class="form-field"><label for="to_date">To</label><input class="form-control" type="date" id="to_date" name="to" value="{{ to_date }}"></div><button class="button button-small" type="submit">Filter</button><a class="subtle-link" href="{% url 'operations-reports' %}">Clear</a></form>{% if error %}<div class="report-error">{{ error }}</div>{% endif %}</div>
+  <div class="stats-grid space-top">
+    <div class="stat-card"><div class="stat-label">Shipments</div><div class="stat-value">{{ total }}</div><span>Within the date filter</span></div>
+    <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-value">{{ completed }}</div><span>Recorded delivered</span></div>
+    <div class="stat-card"><div class="stat-label">Delivery completion</div><div class="stat-value">{{ delivery_rate }}%</div><span>Delivered / total shipments</span></div>
+    <div class="stat-card"><div class="stat-label">Overdue open deliveries</div><div class="stat-value">{{ overdue }}</div><span>Based on expected delivery date</span></div>
+  </div>
+  <div class="summary-strip"><span><strong>KES {{ fees|floatformat:2 }}</strong> total booked delivery fees (not revenue collected)</span><span>Download the CSV for detailed records.</span></div>
+  <div class="section-card"><div class="card-header"><div><h2>Shipments by status</h2><p>Live totals from your database</p></div></div><div class="table-scroll"><table><thead><tr><th>Status</th><th>Shipments</th></tr></thead><tbody>{% for s in status_rows %}<tr><td><span class="status status-{{ s.value }}">{{ s.label }}</span></td><td>{{ s.count }}</td></tr>{% endfor %}</tbody></table></div></div>
+</section>
+{% endblock %}
